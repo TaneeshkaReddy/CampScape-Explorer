@@ -3,7 +3,8 @@ const Schema=mongoose.Schema;// we have done this so that while creating actual 
 
 const CampgroundSchema=new Schema({
   title:String,
-  price:String,
+  image: String,
+  price:Number,
   description:String,
   location:String
 });

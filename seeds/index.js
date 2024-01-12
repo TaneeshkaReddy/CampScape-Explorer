@@ -25,9 +25,15 @@ const seedDB=async()=>{
   await campground.deleteMany({});
   for(let i=0;i<50;i++){
     const random1000=Math.floor(Math.random()*1000);
+    const price=Math.floor(Math.random()*2000)+10;
     const camp=new campground({
       location:`${cities[random1000].city},${cities[random1000].state}`,
-      title:`${sample(descriptors)} ${sample(places)}`
+      title:`${sample(descriptors)} ${sample(places)}`,
+      image: 'https://source.unsplash.com/collection/483251',
+      // here using unsplash website ka collection, everytime we use above url, we will get a different image
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut ultricies porta mauris, sit amet semper ipsum pretium in. Quisque ut sem ultrices, porta sem ac, blandit mi. Aliquam erat volutpat. Integer ut commodo quam. Mauris vel nibh ut elit imperdiet venenatis. Integer mollis ullamcorper nunc, non suscipit quam cursus a. In hendrerit dui eros, nec sagittis dolor faucibus sed. Nullam ac orci non diam venenatis dignissim vitae ut augue. Etiam volutpat nunc sit amet egestas fermentum',
+      price
+
     })
     await camp.save();
   }
