@@ -1,6 +1,7 @@
 const express=require('express');
 const path=require('path');
 const mongoose=require('mongoose');
+const ejsMate=require('ejs-mate');
 const methodOverride=require('method-override');//for this first do npm i method-override,then this is used so that we can disguise put/patch requests as post requests ,so basically tricking express
 
 const campground=require('./models/campground')//importing Campground model from campground.js
@@ -23,6 +24,7 @@ db.once("open",()=>{
 const app=express();
 
 //middleware
+app.engine('ejs',ejsMate);
 app.set('view engine','ejs');
 app.set('views',path.join(__dirname,'views'));
 app.use(express.urlencoded({extended:true}));//without this line when we submit form , and if we used res.send(req.body) in app.post method , it will show empty body because, body won't be parsed.
