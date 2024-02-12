@@ -33,26 +33,8 @@ app.set('views',path.join(__dirname,'views'));
 app.use(express.urlencoded({extended:true}));//without this line when we submit form , and if we used res.send(req.body) in app.post method , it will show empty body because, body won't be parsed.
 app.use(methodOverride('_method'));
 
-app.get('/',(req,res)=>{
-  //  res.send("I AM WORKING yayyy");
-  res.render('home');
-})
-
-app.get('/campgrounds',catchAsync(async(req,res)=>{
-  const campgrounds=await campground.find({});
-  res.render('campgrounds/index',{campgrounds})
-}))
-
-app.get('/campgrounds/new',(req,res)=>{
-  res.render('campgrounds/new');
-})
-
-app.post('/campgrounds',catchAsync(async(req,res,next)=>{
-  // res.send(req.body); to check
-
-  // if(!req.body.campground) throw new ExpressError('Invalid data',400)
-  // so here if error is encountered ,then it will throw an "ExpressError" and above wala catchAsync will catch it and hand it over to next()
-
+//joi middleware, not using it in app.use cuz we need this only for selective routes and not for every route
+const validateCampground=(req,res,next)=>{
   const campgroundSchema=joi.object({  //basic joi schema for validating data even before saving it with mongoose
     campground: joi.object({
       title:joi.string().required(),
@@ -70,8 +52,32 @@ app.post('/campgrounds',catchAsync(async(req,res,next)=>{
     if(error){
       const msg=error.details.map(el=>el.message).join(',')
     throw new ExpressError(msg,400)
+  }else{
+    next();
   }
   console.log(result);
+}
+
+app.get('/',(req,res)=>{
+  //  res.send("I AM WORKING yayyy");
+  res.render('home');
+})
+
+app.get('/campgrounds',catchAsync(async(req,res)=>{
+  const campgrounds=await campground.find({});
+  res.render('campgrounds/index',{campgrounds})
+}))
+
+app.get('/campgrounds/new',(req,res)=>{
+  res.render('campgrounds/new');
+})
+
+app.post('/campgrounds',validateCampground,catchAsync(async(req,res,next)=>{
+  // res.send(req.body); to check
+
+  // if(!req.body.campground) throw new ExpressError('Invalid data',400)
+  // so here if error is encountered ,then it will throw an "ExpressError" and above wala catchAsync will catch it and hand it over to next()
+
   const camp=new campground(req.body.campground);
   await camp.save();
   res.redirect(`/campgrounds/${camp._id}`);
@@ -96,7 +102,7 @@ app.get('/campgrounds/:id/edit',catchAsync(async(req,res)=>{
   res.render('campgrounds/edit',{camp})
 }))
 
-app.put('/campgrounds/:id',catchAsync(async(req,res)=>{
+app.put('/campgrounds/:id',validateCampground,catchAsync(async(req,res)=>{
   // res.send("it worked");
   // res.send(req.body);
   const {id}=req.params;
