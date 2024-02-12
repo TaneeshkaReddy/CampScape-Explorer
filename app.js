@@ -2,6 +2,7 @@ const express=require('express');
 const path=require('path');
 const mongoose=require('mongoose');
 const ejsMate=require('ejs-mate');
+const joi=require('joi');
 const catchAsync=require('./utils/catchAsync');
 const ExpressError=require('./utils/ExpressError');
 const methodOverride=require('method-override');//for this first do npm i method-override,then this is used so that we can disguise put/patch requests as post requests ,so basically tricking express
@@ -48,9 +49,29 @@ app.get('/campgrounds/new',(req,res)=>{
 
 app.post('/campgrounds',catchAsync(async(req,res,next)=>{
   // res.send(req.body); to check
-  if(!req.body.campground) throw new ExpressError('Invalid data',400)
+
+  // if(!req.body.campground) throw new ExpressError('Invalid data',400)
   // so here if error is encountered ,then it will throw an "ExpressError" and above wala catchAsync will catch it and hand it over to next()
 
+  const campgroundSchema=joi.object({  //basic joi schema for validating data even before saving it with mongoose
+    campground: joi.object({
+      title:joi.string().required(),
+      price: joi.number().required().min(0),
+      image:joi.string().required(),
+      location:joi.string().required(),
+      description:joi.string().required()
+    }).required()
+
+  })
+
+  // const result=campgroundSchema.validate(req.body);
+  const {error} =campgroundSchema.validate(req.body);
+  // if(result.error){
+    if(error){
+      const msg=error.details.map(el=>el.message).join(',')
+    throw new ExpressError(msg,400)
+  }
+  console.log(result);
   const camp=new campground(req.body.campground);
   await camp.save();
   res.redirect(`/campgrounds/${camp._id}`);
