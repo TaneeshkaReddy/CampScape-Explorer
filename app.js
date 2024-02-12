@@ -2,7 +2,8 @@ const express=require('express');
 const path=require('path');
 const mongoose=require('mongoose');
 const ejsMate=require('ejs-mate');
-const joi=require('joi');
+// const joi=require('joi');
+const {campgroundSchema}=require('./joi_schemas.js');
 const catchAsync=require('./utils/catchAsync');
 const ExpressError=require('./utils/ExpressError');
 const methodOverride=require('method-override');//for this first do npm i method-override,then this is used so that we can disguise put/patch requests as post requests ,so basically tricking express
@@ -35,16 +36,7 @@ app.use(methodOverride('_method'));
 
 //joi middleware, not using it in app.use cuz we need this only for selective routes and not for every route
 const validateCampground=(req,res,next)=>{
-  const campgroundSchema=joi.object({  //basic joi schema for validating data even before saving it with mongoose
-    campground: joi.object({
-      title:joi.string().required(),
-      price: joi.number().required().min(0),
-      image:joi.string().required(),
-      location:joi.string().required(),
-      description:joi.string().required()
-    }).required()
-
-  })
+ 
 
   // const result=campgroundSchema.validate(req.body);
   const {error} =campgroundSchema.validate(req.body);
