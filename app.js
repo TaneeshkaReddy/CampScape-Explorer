@@ -11,6 +11,7 @@ const methodOverride=require('method-override');//for this first do npm i method
 const campground=require('./models/campground')//importing Campground model from campground.js
 //so what i understood is that : in campground.js we exported the model so basically only what we export can be
 //imported and used in another file (here app.js) 
+const Review=require('./models/review');
 
 mongoose.connect('mongodb://127.0.0.1:27017/camp-scape')
 
@@ -106,6 +107,16 @@ app.delete('/campgrounds/:id',catchAsync(async(req,res)=>{
   const {id}=req.params;
   await campground.findByIdAndDelete(id);
   res.redirect('/campgrounds');
+}))
+
+app.post('/campgrounds/:id/reviews',catchAsync(async(req,res)=>{
+  // res.send("you made it!!")
+  const camp=await campground.findById(req.params.id);
+  const review=new Review(req.body.review);
+  camp.reviews.push(review);
+  await review.save();
+  await camp.save();
+  res.redirect(`/campgrounds/${camp._id}`);
 }))
 
 app.all('*',(req,res,next)=>{

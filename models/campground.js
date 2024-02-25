@@ -6,9 +6,15 @@ const CampgroundSchema=new Schema({
   image: String,
   price:Number,
   description:String,
-  location:String
+  location:String,
+  reviews:[
+    {
+      type:Schema.Types.ObjectId,
+      ref:'Review'
+    }
+  ]
 });
 
 //exporting model Campground by compiling model name: Campground and schema name : CampgroundSchema
 module.exports=mongoose.model('Campground',CampgroundSchema);
-//remeber no quotes for CampgroundSchema for above statement, it caused an error
+//remember no quotes for CampgroundSchema for above statement, it caused an error
