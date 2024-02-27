@@ -3,7 +3,7 @@ const path=require('path');
 const mongoose=require('mongoose');
 const ejsMate=require('ejs-mate');
 // const joi=require('joi');
-const {campgroundSchema}=require('./joi_schemas.js');
+const {campgroundSchema,reviewSchema}=require('./joi_schemas.js');
 const catchAsync=require('./utils/catchAsync');
 const ExpressError=require('./utils/ExpressError');
 const methodOverride=require('method-override');//for this first do npm i method-override,then this is used so that we can disguise put/patch requests as post requests ,so basically tricking express
@@ -37,9 +37,7 @@ app.use(methodOverride('_method'));
 
 //joi middleware, not using it in app.use cuz we need this only for selective routes and not for every route
 const validateCampground=(req,res,next)=>{
- 
-
-  // const result=campgroundSchema.validate(req.body);
+ // const result=campgroundSchema.validate(req.body);
   const {error} =campgroundSchema.validate(req.body);
   // if(result.error){
     if(error){
@@ -48,8 +46,20 @@ const validateCampground=(req,res,next)=>{
   }else{
     next();
   }
-  console.log(result);
+  console.log(res);
 }
+
+const validateReview=(req,res,next)=>{
+  const {error}=reviewSchema.validate(req.body);
+  if(error){
+    const msg=error.details.map(el=>el.message).join(',')
+  throw new ExpressError(msg,400)
+}else{
+  next();
+}
+console.log(res);
+}
+
 
 app.get('/',(req,res)=>{
   //  res.send("I AM WORKING yayyy");
@@ -85,8 +95,9 @@ app.post('/campgrounds',validateCampground,catchAsync(async(req,res,next)=>{
 
 app.get('/campgrounds/:id',catchAsync(async(req,res)=>{
  
-  const camp=await campground.findById(req.params.id);
-    res.render('campgrounds/show',{ camp });
+  const camp=await campground.findById(req.params.id).populate('reviews');
+  
+    res.render('campgrounds/show',{camp});
  
 }))
 
@@ -109,7 +120,7 @@ app.delete('/campgrounds/:id',catchAsync(async(req,res)=>{
   res.redirect('/campgrounds');
 }))
 
-app.post('/campgrounds/:id/reviews',catchAsync(async(req,res)=>{
+app.post('/campgrounds/:id/reviews',validateReview,catchAsync(async(req,res)=>{
   // res.send("you made it!!")
   const camp=await campground.findById(req.params.id);
   const review=new Review(req.body.review);
@@ -117,6 +128,15 @@ app.post('/campgrounds/:id/reviews',catchAsync(async(req,res)=>{
   await review.save();
   await camp.save();
   res.redirect(`/campgrounds/${camp._id}`);
+}))
+
+app.delete('/campgrounds/:id/reviews/:reviewId',catchAsync(async(req,res,next)=>{
+  const {id,reviewId}=req.params;
+  await campground.findByIdAndUpdate(id,{$pull :{reviews:reviewId}}); //this is gonna pull review with reviewId out of reviews array and update that campground
+  await Review.findByIdAndDelete(reviewId);
+  // res.send("delete me")
+  res.redirect(`/campgrounds/${id}`);
+
 }))
 
 app.all('*',(req,res,next)=>{
