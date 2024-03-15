@@ -18,6 +18,8 @@ const Review=require('./models/review');
 const campgrounds=require('./routes/campgrounds.js');
 const reviews=require('./routes/reviews.js');
 
+const flash=require('connect-flash');
+
 mongoose.connect('mongodb://127.0.0.1:27017/camp-scape')
 
 
@@ -54,7 +56,13 @@ const sessionConfig={
   }
 }
 app.use(session(sessionConfig));
+app.use(flash());
 
+app.use((req,res,next)=>{
+  res.locals.success=req.flash('success');
+  res.locals.error=req.flash('errror');
+  next();
+})
 
 app.use('/campgrounds',campgrounds)
 app.use('/campgrounds/:id/reviews',reviews)

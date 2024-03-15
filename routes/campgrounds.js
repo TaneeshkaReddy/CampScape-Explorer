@@ -33,6 +33,7 @@ router.get('/new',(req,res)=>{
 })
 
 router.post('/',validateCampground,catchAsync(async(req,res,next)=>{
+  
   // res.send(req.body); to check
 
   // if(!req.body.campground) throw new ExpressError('Invalid data',400)
@@ -40,6 +41,7 @@ router.post('/',validateCampground,catchAsync(async(req,res,next)=>{
 
   const camp=new campground(req.body.campground);
   await camp.save();
+  req.flash('success',"Successfully made a campground");
   res.redirect(`/campgrounds/${camp._id}`);
 }))
 
