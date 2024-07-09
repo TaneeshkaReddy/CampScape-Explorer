@@ -1,0 +1,41 @@
+8/7/24 PASSPORT
+npm passport , passport-local , passport-local-mongoose
+
+then, we are make a mongoose user model with email field only, and use passport plugin on that which automatically adds username and hashed password field.
+
+app.user(passport.initialize());
+app.use(passport.session());
+
+passport.use(new LocalStrategy(User.authenticate()));
+// this line tells us hi passport, use localStrategy that was required and for that local strategy use and in-built method for authentication called User.authenticate()
+
+
+passport.serializeUser(User.serializeUser()); 
+passport.deserializeUser(User.deserializeUser());
+
+app.get('/fakeUser',async (req,res)=>{
+  const user=new User({email:'tan@gmail.com',username:'tannn'})
+  const newUser=await User.register(user,'mypassword')
+  res.send(newUser);
+})
+// so when we do this, a user is created with email-tan@gmail.com,username-tannn and hashed password and salt value
+
+
+
+
+
+
+
+
+
+
+we are setting function of isLoggedIn to many things like creating a new campground, to edit etc,
+isLoggedIn - checks if a user is logged in ,then only lets others do the above activities
+
+after this , one problem was that , after a user registers, he is still not logged in and that is not a good thing, so we are using a passport method to 
+log in a user after registration called res.login()
+
+we are making a middleware.js route to serialise and deserialize the session details
+then one p
+
+then we see how to redirect users back to the page they were visiting before being sent to the login page, once they've successfully logged in

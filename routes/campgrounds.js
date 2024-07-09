@@ -5,19 +5,20 @@ const ExpressError=require('../utils/ExpressError');
 const methodOverride=require('method-override');
 const campground=require('../models/campground');
 const {campgroundSchema,reviewSchema}=require('../joi_schemas.js');
+const {isLoggedIn}=require('../middleware');
 
 //joi middleware, not using it in app.use cuz we need this only for selective routes and not for every route
 const validateCampground=(req,res,next)=>{
   // const result=campgroundSchema.validate(req.body);
-   const {error} =campgroundSchema.validate(req.body);
+   const {error} =campgroundSchema.validate(req.body); //.validate is inbuilt func of joi
    // if(result.error){
      if(error){
        const msg=error.details.map(el=>el.message).join(',')
-     throw new ExpressError(msg,400)
+       throw new ExpressError(msg,400)
    }else{
      next();
    }
-   console.log(res);
+   
  }
  
 
@@ -28,11 +29,13 @@ router.get('/',catchAsync(async(req,res)=>{
   res.render('campgrounds/index',{campgrounds})
 }))
 
-router.get('/new',(req,res)=>{
+router.get('/new',isLoggedIn,(req,res)=>{
+  
   res.render('campgrounds/new');
 })
 
-router.post('/',validateCampground,catchAsync(async(req,res,next)=>{
+
+router.post('/',isLoggedIn,validateCampground,catchAsync(async(req,res,next)=>{
   
   // res.send(req.body); to check
 
@@ -54,7 +57,9 @@ router.post('/',validateCampground,catchAsync(async(req,res,next)=>{
 
 router.get('/:id',catchAsync(async(req,res)=>{
  
-  const camp=await campground.findById(req.params.id).populate('reviews');
+  const camp=await campground.findById(req.params.id).populate('reviews'); 
+  //Without populate, the reviews field in the camp document would just be an array of ObjectIds referencing Review documents.
+  //With populate, those ObjectIds are replaced with the actual Review documents, providing full details about each review.
   if (!camp) {
     req.flash('error', 'Cannot find that campground!');
     return res.redirect('/campgrounds');
@@ -64,7 +69,7 @@ router.get('/:id',catchAsync(async(req,res)=>{
  
 }))
 
-router.get('/:id/edit',catchAsync(async(req,res)=>{
+router.get('/:id/edit',isLoggedIn,catchAsync(async(req,res)=>{
   const camp=await campground.findById(req.params.id);
   if (!camp) {
     req.flash('error', 'Cannot find that campground!');
@@ -73,7 +78,7 @@ router.get('/:id/edit',catchAsync(async(req,res)=>{
   res.render('campgrounds/edit',{camp})
 }))
 
-router.put('/:id',validateCampground,catchAsync(async(req,res)=>{
+router.put('/:id',isLoggedIn,validateCampground,catchAsync(async(req,res)=>{
   // res.send("it worked");
   // res.send(req.body);
   const {id}=req.params;
@@ -82,7 +87,7 @@ router.put('/:id',validateCampground,catchAsync(async(req,res)=>{
   res.redirect(`/campgrounds/${editedcamp._id}`)
 }))
 
-router.delete('/:id',catchAsync(async(req,res)=>{
+router.delete('/:id',isLoggedIn,catchAsync(async(req,res)=>{
   const {id}=req.params;
   await campground.findByIdAndDelete(id);
   req.flash('success','Successfully deleted campground');

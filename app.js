@@ -13,12 +13,18 @@ const campground=require('./models/campground')//importing Campground model from
 //so what i understood is that : in campground.js we exported the model so basically only what we export can be
 //imported and used in another file (here app.js) 
 const Review=require('./models/review');
+const User=require('./models/user');
 
 //requiring routes
-const campgrounds=require('./routes/campgrounds.js');
-const reviews=require('./routes/reviews.js');
+const campgroundroutes=require('./routes/campgrounds.js');
+const reviewroutes=require('./routes/reviews.js');
+const userroutes=require('./routes/users.js');
+
 
 const flash=require('connect-flash');
+
+const passport=require('passport');
+const LocalStrategy=require('passport-local');
 
 mongoose.connect('mongodb://127.0.0.1:27017/camp-scape')
 
@@ -44,6 +50,8 @@ app.use(methodOverride('_method'));
 
 app.use(express.static(path.join(__dirname,'public')))
 
+
+
 //cookie setup
 const sessionConfig={
   secret:'thisisasecret',
@@ -58,14 +66,29 @@ const sessionConfig={
 app.use(session(sessionConfig));
 app.use(flash());
 
-app.use((req,res,next)=>{
-  res.locals.success=req.flash('success');
-  res.locals.error=req.flash('errror');
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));// this line tells us hi passport, use localStrategy that was required and for that local strategy use and in-built method for authentication called User.authenticate()
+passport.serializeUser(User.serializeUser()); //how to store data in a session
+passport.deserializeUser(User.deserializeUser());
+
+app.use((req,res,next)=>{ 
+  console.log(req.session);
+  res.locals.currentUser=req.user; // so everywhere I will have access to the current logged in user just by using currentUser
+  res.locals.success=req.flash('success');//same with succes and error, they will be visible to all routes
+  res.locals.error=req.flash('error');
   next();
+});
+
+app.get('/fakeUser',async (req,res)=>{
+  const user=new User({email:'tan@gmail.com',username:'tannn'})
+  const newUser=await User.register(user,'mypassword')
+  res.send(newUser);
 })
 
-app.use('/campgrounds',campgrounds)
-app.use('/campgrounds/:id/reviews',reviews)
+app.use('/',userroutes);
+app.use('/campgrounds',campgroundroutes)
+app.use('/campgrounds/:id/reviews',reviewroutes)
 // so for all routes in campgrounds and reviews wale routes will be appended by doing the above
 
 app.get('/',(req,res)=>{

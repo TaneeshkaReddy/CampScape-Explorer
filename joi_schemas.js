@@ -1,4 +1,5 @@
 const Joi=require('joi');
+// Joi is a powerful schema description language and data validator for JavaScript.
 
 module.exports.campgroundSchema=Joi.object({  //basic joi schema for validating data even before saving it with mongoose
   campground: Joi.object({
