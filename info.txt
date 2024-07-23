@@ -60,3 +60,21 @@ only people who are logged in can review
 and when they leave a review, it should be associated with that particular person
 then display the name of the reviewer too
 then only people who left the review can delete it
+
+
+
+
+
+23/7/24
+1. Adopting mvc model for structuring our project
+Models - data heavy stufff , data Models
+Views - view content , layouts, everything a user seeds
+Controllers - main logic,heart of application
+
+So first created a folder called controllers with files : campgrounds.js, reviews.js and user.js and just shifting all the async/non async functions from routes folder->>campgrounds.js,folder->>reviews.js,folder->>users.js to these files respectively.
+
+
+2. next we user something called router.route, that will chain similar get,post,put,delete,etc together
+
+3. instead of mentioning review number , we use a star format using starability css file on github
+and we also replace the review slider on the leave a review portion

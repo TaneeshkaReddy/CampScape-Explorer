@@ -7,16 +7,16 @@ const campgroundsController=require('../controllers/campgrounds');
 
 
 
-
-
-
-router.get('/',catchAsync(campgroundsController.index)) //index is a method in a file called campgrounds in controllers folder 
-
-router.get('/new',isLoggedIn,campgroundsController.renderNewForm)//this is a method in a file called campgrounds in controllers folder 
-
-
-router.post('/',isLoggedIn,validateCampground,catchAsync(campgroundsController.createCampground))
-
+//Method 1:
+// router.get('/',catchAsync(campgroundsController.index))
+// router.post('/',isLoggedIn,validateCampground,catchAsync(campgroundsController.createCampground))
+ 
+//Methd 2 - using router.route method
+router.route('/')
+.get(catchAsync(campgroundsController.index)) //index is a method in a file called campgrounds in controllers folder 
+.post(isLoggedIn,validateCampground,catchAsync(campgroundsController.createCampground));
+ 
+router.get('/new',isLoggedIn,campgroundsController.renderNewForm)//this is a method in a file called campgrounds in controllers folder
 // app.get('/makecampground',async (req,res)=>{
 //   const camp=new campground({title:'My Backyard',description:"Sasta camping"});
 //   await camp.save();
@@ -24,7 +24,21 @@ router.post('/',isLoggedIn,validateCampground,catchAsync(campgroundsController.c
 //   // res.render('home');
 // })
 
-router.get('/:id',catchAsync(campgroundsController.showCampground))
+router.route('/:id')
+.get(catchAsync(campgroundsController.showCampground))
+.put(isLoggedIn,verifyAuthor,validateCampground,catchAsync(campgroundsController.updateCampground))
+.delete(isLoggedIn,verifyAuthor,catchAsync(campgroundsController.deleteCampground));
+
+
+
+ 
+
+
+
+
+
+
+
 
 router.get('/:id/edit',isLoggedIn,verifyAuthor,catchAsync(campgroundsController.renderEditForm))
 
@@ -39,8 +53,8 @@ router.get('/:id/edit',isLoggedIn,verifyAuthor,catchAsync(campgroundsController.
 // }))
 
 //METHOD 2 - dividing finding and updating to 2 parts
-router.put('/:id',isLoggedIn,verifyAuthor,validateCampground,catchAsync(campgroundsController.updateCampground))
+//router.put('/:id',isLoggedIn,verifyAuthor,validateCampground,catchAsync(campgroundsController.updateCampground))
 
-router.delete('/:id',isLoggedIn,verifyAuthor,catchAsync(campgroundsController.deleteCampground));
+//METHOD 3 , chaining it to router.route('/:id')
 
 module.exports=router;

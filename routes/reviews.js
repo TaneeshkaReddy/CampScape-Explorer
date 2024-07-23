@@ -9,7 +9,6 @@ const reviewsController=require('../controllers/reviews');
 
 
 
-
 router.post('/',isLoggedIn,validateReview,catchAsync(reviewsController.createReview))
 
 router.delete('/:reviewId',isLoggedIn,verifyReviewAuthor,catchAsync(reviewsController.deleteReview))
