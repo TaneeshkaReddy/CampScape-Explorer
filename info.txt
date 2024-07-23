@@ -19,16 +19,6 @@ app.get('/fakeUser',async (req,res)=>{
   res.send(newUser);
 })
 // so when we do this, a user is created with email-tan@gmail.com,username-tannn and hashed password and salt value
-
-
-
-
-
-
-
-
-
-
 we are setting function of isLoggedIn to many things like creating a new campground, to edit etc,
 isLoggedIn - checks if a user is logged in ,then only lets others do the above activities
 
@@ -36,6 +26,37 @@ after this , one problem was that , after a user registers, he is still not logg
 log in a user after registration called res.login()
 
 we are making a middleware.js route to serialise and deserialize the session details
-then one p
+then one 
 
 then we see how to redirect users back to the page they were visiting before being sent to the login page, once they've successfully logged in
+
+
+
+
+
+9/7/2024:
+adding authorization
+so initially we add an author field to campground model that references to user model
+and added seeds/index.js to keep taneeshka as author of default created camps
+then when we create a new campground on post route, the userid is put as the author
+then we just edited show page so that the author is visible
+
+
+then we made changes :<% if(currentUser && camp.author.equals(currentUser._id)){ %>
+o show.ejs so that only the author is able to view the edit and delete option
+
+but now anyone can send a post/patch request through postman so we added permissions
+by tweaking a few things in campgrounds.js ka:
+1. router.get('/:id/edit' 
+2.router.put('/:id'
+3. router.delete('/:id'
+
+now as it repeating in many, lets just create another middleware called verifyAuthor
+then we finally move all the middlwares to middleware.js file
+
+
+next move on to reviews
+only people who are logged in can review
+and when they leave a review, it should be associated with that particular person
+then display the name of the reviewer too
+then only people who left the review can delete it
