@@ -1,3 +1,10 @@
+if(process.env.NODE_ENV !== "production"){
+  require('dotenv').config();
+}
+//process.env.NODE_ENV is an environment variable that is usaully just production or development
+
+
+
 const express=require('express');
 const path=require('path');
 const mongoose=require('mongoose');

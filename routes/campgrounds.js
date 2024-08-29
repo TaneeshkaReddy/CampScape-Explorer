@@ -4,6 +4,8 @@ const catchAsync=require('../utils/catchAsync');
 const campground=require('../models/campground');
 const {isLoggedIn,verifyAuthor,validateCampground}=require('../middleware');
 const campgroundsController=require('../controllers/campgrounds');
+const multer=require('multer');
+const upload=multer({dest:'uploads/'});
 
 
 
@@ -14,7 +16,12 @@ const campgroundsController=require('../controllers/campgrounds');
 //Methd 2 - using router.route method
 router.route('/')
 .get(catchAsync(campgroundsController.index)) //index is a method in a file called campgrounds in controllers folder 
-.post(isLoggedIn,validateCampground,catchAsync(campgroundsController.createCampground));
+// .post(isLoggedIn,validateCampground,catchAsync(campgroundsController.createCampground));
+.post(upload.single('image'),(req,res)=>{
+  //res.send({body:req.body, file:req.file});
+  console.log(req.body,req.files);
+  res.send('file uploaded');
+})
  
 router.get('/new',isLoggedIn,campgroundsController.renderNewForm)//this is a method in a file called campgrounds in controllers folder
 // app.get('/makecampground',async (req,res)=>{
