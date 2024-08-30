@@ -87,3 +87,13 @@ and we also replace the review slider on the leave a review portion
 3. $ npm install --save multer
 4.then we are going to use cloudinary
 5. for that we need .env file for storing all secrets, so do npm i dotenv
+
+
+
+30/8/24
+1. npm install cloudinary@1.41.3
+   npm install multer-storage-cloudinary@4.0.0
+   npm install multer@1.4.5-lts.1
+  
+2.changed schema of campground.js for images
+3. showing the uploaded image to cloudinary with the help of bootstrap carousel on show.ejs

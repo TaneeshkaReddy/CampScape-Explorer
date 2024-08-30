@@ -16,10 +16,12 @@ module.exports.createCampground=async(req,res,next)=>{
 
   // if(!req.body.campground) throw new ExpressError('Invalid data',400)
   // so here if error is encountered ,then it will throw an "ExpressError" and above wala catchAsync will catch it and hand it over to next()
-
+  
   const camp=new campground(req.body.campground);
   camp.author=req.user._id;
+  camp.images=req.files.map(f => ({url: f.path,filename:f.filename}));
   await camp.save();
+  console.log(camp);
   req.flash('success',"Successfully made a campground");
   res.redirect(`/campgrounds/${camp._id}`);
 }
