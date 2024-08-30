@@ -31,12 +31,19 @@ const seedDB=async()=>{
       location:`${cities[random1000].city},${cities[random1000].state}`,
       title:`${sample(descriptors)} ${sample(places)}`,
       // image: 'https://source.unsplash.com/collection/483251',
-      image: 'https://q-xx.bstatic.com/xdata/images/hotel/max1024x768/254415687.jpg%3Fk%3D47ed904fa4d426dad09e67eac7a7544b37be6ceaa2baa7f5b98b3b54eb958f39%26o%3D%3Fs%3D375x210%26ar%3D16x9',
-
       // here using unsplash website ka collection, everytime we use above url, we will get a different image
       description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut ultricies porta mauris, sit amet semper ipsum pretium in. Quisque ut sem ultrices, porta sem ac, blandit mi. Aliquam erat volutpat. Integer ut commodo quam. Mauris vel nibh ut elit imperdiet venenatis. Integer mollis ullamcorper nunc, non suscipit quam cursus a. In hendrerit dui eros, nec sagittis dolor faucibus sed. Nullam ac orci non diam venenatis dignissim vitae ut augue. Etiam volutpat nunc sit amet egestas fermentum',
-      price
-
+      price,
+      images:[
+        {
+          url: 'https://res.cloudinary.com/dj3b1u10d/image/upload/v1725037613/YelpCamp/wlmb7ivbruhspjsf0ch0.jpg',
+          filename: 'YelpCamp/wlmb7ivbruhspjsf0ch0'
+        },
+        {
+          url: 'https://res.cloudinary.com/dj3b1u10d/image/upload/v1725037613/YelpCamp/zepio3jq4fconi7l5xok.jpg',
+          filename: 'YelpCamp/zepio3jq4fconi7l5xok'
+        }
+      ]
     })
     await camp.save();
   }
