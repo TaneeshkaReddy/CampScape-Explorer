@@ -20,7 +20,7 @@
 
   <h1 class="text-center">Edit Campground</h1>
   <div class="col-6 offset-3"> <!-- offset-3 when I want to use 6 columns but not starting from left margin, so leaving 3 columns to left and 3 to right-->
-    <form action="/campgrounds/<%=camp._id%>?_method=PUT" method="POST" novalidate class="validated-form">
+    <form action="/campgrounds/<%=camp._id%>?_method=PUT" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
 
       <div class="mb-3">
         <label class="form-label" for="titles">Title</label>
@@ -40,13 +40,9 @@
             Looks good!
            </div>
       </div>
-
       <div class="mb-3">
-        <label class="form-label" for="image">Image URL</label>
-        <input class="form-control" type="text" id="image" name="campground[image]" value="<%=camp.image%>" required>
-        <div class="valid-feedback"><!--just see bootstrap docs for this called bootstrap form validation-->
-            Looks good!
-           </div>
+        <label for="formFile" class="form-label">Add Images+</label>
+        <input class="form-control" type="file" id="formFile" name="image" multiple>
       </div>
 
       <div class="mb-3">
@@ -66,6 +62,19 @@
         <div class="valid-feedback"><!--just see bootstrap docs for this called bootstrap form validation-->
             Looks good!
            </div>
+      </div>
+
+      <div class="mb-3">
+        <% camp.images.forEach(function(img,idx){ %>
+          <img src="<%=img.url%>" class="img-thumbnail" alt="">
+          
+          <div class="form-check-inline">
+            <input type="checkbox" id="image-<%=idx%>" name="deleteImages[]" value="<%=img.filename%>">
+          </div>
+          <label for="image-<%=idx%>">Delete Image</label>
+          
+          <% }) %>
+
       </div>
 
       <div class="mb-3">

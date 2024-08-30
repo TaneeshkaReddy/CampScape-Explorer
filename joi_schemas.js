@@ -8,7 +8,8 @@ module.exports.campgroundSchema=Joi.object({  //basic joi schema for validating 
     //image:Joi.string().required(),
     location:Joi.string().required(),
     description:Joi.string().required()
-  }).required()
+  }).required(),
+  deleteImages:Joi.array()
 
 });
 

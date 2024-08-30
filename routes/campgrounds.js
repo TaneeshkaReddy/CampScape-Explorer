@@ -20,7 +20,7 @@ router.route('/')
 .post(isLoggedIn,upload.array('image'),validateCampground,catchAsync(campgroundsController.createCampground));
 
  
- 
+
 router.get('/new',isLoggedIn,campgroundsController.renderNewForm)//this is a method in a file called campgrounds in controllers folder
 // app.get('/makecampground',async (req,res)=>{
 //   const camp=new campground({title:'My Backyard',description:"Sasta camping"});
@@ -31,7 +31,7 @@ router.get('/new',isLoggedIn,campgroundsController.renderNewForm)//this is a met
 
 router.route('/:id')
 .get(catchAsync(campgroundsController.showCampground))
-.put(isLoggedIn,verifyAuthor,validateCampground,catchAsync(campgroundsController.updateCampground))
+.put(isLoggedIn,verifyAuthor,upload.array('image'),validateCampground,catchAsync(campgroundsController.updateCampground))
 .delete(isLoggedIn,verifyAuthor,catchAsync(campgroundsController.deleteCampground));
 
 
